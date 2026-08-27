@@ -68,17 +68,68 @@ async function insertFarmer(data) {
  */
 async function getFarmerById(id) {
   try {
-    // .maybeSingle() retrieves 1 row or null if not found, preventing unnecessary 406 errors.
-    const { data: farmer, error } = await supabase
+    if (!id) return { data: null, error: null };
+
+    // Query rows directly and inspect count to avoid .single() coercion errors on missing rows
+    const { data: rows, error } = await supabase
       .from('farmers')
       .select('*')
-      .eq('id', id)
-      .maybeSingle();
+      .eq('id', id);
 
-    if (error) throw error;
-    return { data: farmer, error: null };
+    if (error) {
+      console.warn(`Notice in getFarmerById for ID "${id}":`, error.message);
+      return { data: null, error: null };
+    }
+
+    if (!rows || rows.length === 0) {
+      return { data: null, error: null };
+    }
+
+    return { data: rows[0], error: null };
   } catch (error) {
-    console.error('Error in getFarmerById:', error.message);
+    console.warn('Exception in getFarmerById:', error.message);
+    return { data: null, error: null };
+  }
+}
+
+/**
+ * Updates an existing farmer profile by their UUID.
+ *
+ * @param {string} id - The farmer's UUID to update
+ * @param {Object} data - Fields to update (e.g. name, district, state, primary_crop, land_size, loan_due_date, preferred_language)
+ * @returns {Promise<{ data: Object|null, error: Object|null }>}
+ *
+ * Example usage:
+ * const { data, error } = await updateFarmer('some-uuid-123', {
+ *   name: 'Ramesh Kumar Updated',
+ *   district: 'Nashik',
+ *   land_size: 4.0
+ * });
+ */
+async function updateFarmer(id, data) {
+  try {
+    if (!id) return { data: null, error: new Error('Farmer ID is required for update') };
+
+    // Update matching rows and inspect count without .single() to avoid coercion error
+    const { data: updatedRows, error } = await supabase
+      .from('farmers')
+      .update(data)
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.warn(`Notice in updateFarmer for ID "${id}":`, error.message);
+      return { data: null, error: null };
+    }
+
+    if (!updatedRows || updatedRows.length === 0) {
+      // 0 rows updated because the farmer ID no longer exists in Supabase
+      return { data: null, error: null };
+    }
+
+    return { data: updatedRows[0], error: null };
+  } catch (error) {
+    console.error('Error in updateFarmer:', error.message);
     return { data: null, error };
   }
 }
@@ -358,6 +409,7 @@ module.exports = {
   // Farmers
   insertFarmer,
   getFarmerById,
+  updateFarmer,
 
   // Crop Prices
   getPricesByCropAndDistrict,

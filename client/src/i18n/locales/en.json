@@ -19,6 +19,7 @@
     "language": "Language",
     "english": "English",
     "hindi": "हिंदी",
+    "marathi": "मराठी (Marathi)",
     "loading": "Loading...",
     "callNow": "Call Now",
     "viewDetails": "View Details",
@@ -38,12 +39,31 @@
   "onboarding": {
     "title": "Welcome Farmer Friend!",
     "subtitle": "Set up your profile for tailored advisory and early warning alerts.",
+    "welcomeBanner": "Get timely alerts before weather, pest, or price distress impacts your farm.",
+    "nameLabel": "Farmer Full Name",
+    "namePlaceholder": "e.g. Ramesh Kumar",
     "stateLabel": "Your State",
     "districtLabel": "Your District / Tehsil",
     "cropLabel": "What is your main crop?",
+    "landSizeLabel": "Land Size (in Acres)",
+    "landSizePlaceholder": "e.g. 2.5",
+    "loanDueDateLabel": "Next Loan Repayment Due Date",
+    "preferredLanguageLabel": "Preferred Language",
     "phoneLabel": "Mobile Number (Optional for SMS alerts)",
-    "submitBtn": "Start Using System",
-    "welcomeBanner": "Get timely alerts before weather, pest, or price distress impacts your farm."
+    "submitBtn": "Save Profile & Continue",
+    "updateBtn": "Update Profile & Continue",
+    "saving": "Saving to System...",
+    "updating": "Updating Profile in System...",
+    "errors": {
+      "nameRequired": "Please enter the farmer's name",
+      "stateRequired": "Please select a state",
+      "districtRequired": "Please select a district",
+      "cropRequired": "Please select your primary crop",
+      "landSizeRequired": "Please enter a valid land size in acres (> 0)",
+      "loanDateRequired": "Please select your next loan repayment due date",
+      "loanDateFuture": "Loan repayment due date must be in the future (after today)",
+      "saveFailed": "Unable to connect to server. Please check your network and try again."
+    }
   },
   "dashboard": {
     "title": "Farmer Advisory Hub",

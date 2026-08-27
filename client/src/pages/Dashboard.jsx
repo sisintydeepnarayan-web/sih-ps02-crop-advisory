@@ -19,7 +19,8 @@ import { getStoredProfile } from '../utils/helpers';
 
 export default function Dashboard() {
   const { t } = useTranslation();
-  const profile = getStoredProfile() || { district: 'Varanasi', crop: 'wheat' };
+  const profile = getStoredProfile() || { name: '', district: 'Varanasi', primary_crop: 'wheat' };
+  const cropDisplay = (profile.primary_crop || profile.crop || 'wheat').toUpperCase();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4 pb-28 space-y-5">
@@ -28,10 +29,14 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center gap-1.5 text-emerald-200 text-xs font-bold uppercase tracking-wider mb-1">
             <MapPin size={14} />
-            <span>{profile.district || 'India'} • {profile.crop ? profile.crop.toUpperCase() : 'WHEAT'}</span>
+            <span>
+              {profile.district || 'India'}
+              {profile.state ? `, ${profile.state}` : ''} • {cropDisplay}
+              {profile.land_size ? ` • ${profile.land_size} Acres` : ''}
+            </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black">
-            {t('dashboard.greeting')} 🙏
+            {t('dashboard.greeting')} {profile.name ? `, ${profile.name}` : ''} 🙏
           </h2>
           <p className="text-xs sm:text-sm text-emerald-100 font-medium mt-0.5">
             {t('app.tagline')}
@@ -39,9 +44,9 @@ export default function Dashboard() {
         </div>
         <Link
           to="/onboarding"
-          className="bg-emerald-900/80 hover:bg-emerald-950 text-white px-3 py-2 rounded-xl text-xs font-bold border border-emerald-600/50 shrink-0 text-center"
+          className="bg-emerald-900/80 hover:bg-emerald-950 text-white px-3.5 py-2.5 rounded-2xl text-xs font-bold border border-emerald-600/50 shrink-0 text-center shadow-sm"
         >
-          {t('common.district')}
+          {t('nav.onboarding')}
         </Link>
       </div>
 

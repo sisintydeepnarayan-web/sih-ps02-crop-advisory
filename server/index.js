@@ -61,6 +61,20 @@ app.get('/api/farmers/:id', async (req, res) => {
   res.json({ data });
 });
 
+app.put('/api/farmers/:id', async (req, res) => {
+  const { data, error } = await db.updateFarmer(req.params.id, req.body);
+  if (error) return res.status(400).json({ error: error.message });
+  if (!data) return res.status(404).json({ message: 'Farmer not found' });
+  res.json({ data });
+});
+
+app.patch('/api/farmers/:id', async (req, res) => {
+  const { data, error } = await db.updateFarmer(req.params.id, req.body);
+  if (error) return res.status(400).json({ error: error.message });
+  if (!data) return res.status(404).json({ message: 'Farmer not found' });
+  res.json({ data });
+});
+
 // ------------------------------------------------------------------------------
 // Crop Prices Endpoints
 // ------------------------------------------------------------------------------

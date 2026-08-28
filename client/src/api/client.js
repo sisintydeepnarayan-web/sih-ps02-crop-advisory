@@ -101,10 +101,30 @@ export async function getFarmerById(id) {
   }
 }
 
+/**
+ * Fetches rule-based crop advisory recommendations from backend engine
+ * @param {string} district - District name
+ * @param {string} crop - Crop identifier (e.g. 'wheat', 'cotton')
+ * @returns {Promise<Object>} The structured advisory object
+ */
+export async function fetchCropAdvisory(district, crop) {
+  const params = new URLSearchParams();
+  if (district) params.append('district', district);
+  if (crop) params.append('crop', crop);
+
+  const response = await fetch(`${API_BASE_URL}/api/advisory?${params.toString()}`);
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || `Failed to fetch advisory: ${response.status}`);
+  }
+  return result.data;
+}
+
 export default {
   checkBackendHealth,
   createFarmer,
   updateFarmer,
   getFarmerById,
+  fetchCropAdvisory,
   API_BASE_URL,
 };

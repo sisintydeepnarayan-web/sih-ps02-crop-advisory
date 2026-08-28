@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./db');
+const { getCropAdvisory } = require('./advisoryEngine');
 
 // Load environment variables
 dotenv.config();
@@ -106,6 +107,39 @@ app.post('/api/weather', async (req, res) => {
   const { data, error } = await db.insertWeatherSnapshot(req.body);
   if (error) return res.status(400).json({ error: error.message });
   res.status(201).json({ data });
+});
+
+// ------------------------------------------------------------------------------
+// Crop Advisory Engine Endpoint
+// ------------------------------------------------------------------------------
+app.get('/api/advisory', async (req, res) => {
+  try {
+    const { district = 'Nashik', crop = 'wheat', date } = req.query;
+
+    // 1. Look up weather snapshot from DB
+    const { data: weatherSnapshot } = await db.getWeatherSnapshot(district, date);
+
+    // 2. If no weather data exists in database for this district/date, fall back to mock weather
+    const weatherData = weatherSnapshot || {
+      district,
+      date: date || new Date().toISOString().split('T')[0],
+      rainfall_mm: 5,
+      expected_rainfall_mm: 32,
+      temp_c: 33,
+      alert_type: 'none'
+    };
+
+    // 3. Compute structured advisory using rule-based engine
+    const advisory = getCropAdvisory(district, crop, weatherData);
+
+    res.json({
+      success: true,
+      data: advisory
+    });
+  } catch (error) {
+    console.error('Error generating crop advisory:', error);
+    res.status(500).json({ error: error.message || 'Failed to generate advisory' });
+  }
 });
 
 // ------------------------------------------------------------------------------

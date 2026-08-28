@@ -79,15 +79,66 @@
   },
   "advisory": {
     "title": "Crop Advisory & Weather Guide",
-    "subtitle": "Timely scientific farming recommendations for your season",
-    "sowingStage": "Sowing & Soil Preparation",
-    "sowingDesc": "Maintain 4-5 cm depth. Ensure adequate moisture before sowing.",
-    "irrigationStage": "Irrigation Recommendation",
-    "irrigationDesc": "Delay next irrigation cycle due to forecasted rain in your block.",
-    "fertilizerStage": "Nutrient & Fertilizer Management",
-    "fertilizerDesc": "Apply second dose of Urea mixed with Zinc as per soil card test.",
-    "pestWarning": "Pest & Disease Advisory",
-    "pestDesc": "Watch out for Fall Armyworm in Maize / Yellow Rust in Wheat."
+    "subtitle": "Scientific farming recommendations tailored to current weather and crop conditions",
+    "weatherSnapshot": "Current Weather Snapshot",
+    "rainfallDeficit": "Rainfall Deficit",
+    "rainfallSurplus": "Rainfall Surplus",
+    "expected": "Expected",
+    "actual": "Actual",
+    "temperature": "Temperature",
+    "condition": "Weather Condition",
+    "primaryAdvisoryTitle": "Critical Advisory Action",
+    "allAdvisoriesTitle": "Agronomic Guidance & Precautions",
+    "favourableCropTitle": "Recommended Resilient Alternate Crop",
+    "favourableCropDesc": "Farming diversification tailored for {{district}}",
+    "waterSavingPill": "{{waterSaving}} Less Water Needed",
+    "filterTitle": "Select Crop & District",
+    "refreshBtn": "Refresh Advisory",
+    "severityLabels": {
+      "high": "Urgent Action Required",
+      "medium": "Caution & Moderate Risk",
+      "low": "Best Practice Guide"
+    },
+    "rules": {
+      "drought_stress": {
+        "issue": "Moisture & Drought Deficit Alert for {{crop}} ({{deficit}} deficit in {{district}})",
+        "recommendation": "Actual rainfall is only {{rainfall}} against expected {{expected}}. Apply light night/early morning drip or sprinkler irrigation immediately. Mulch soil surface with crop residue or straw to minimize evaporation and prevent root desiccation."
+      },
+      "waterlogging": {
+        "issue": "Waterlogging & Excess Moisture Risk for {{crop}} ({{rainfall}} recorded)",
+        "recommendation": "Excess rainfall ({{rainfall}}) has saturated the root zone. Immediately open drainage trenches and clear field outlets to evacuate standing water within 24 hours. Postpone chemical fertilizer application until field drains to prevent nutrient runoff and root rot."
+      },
+      "heat_stress": {
+        "issue": "High Temperature Stress on {{crop}} ({{temp}} vs {{threshold}} threshold)",
+        "recommendation": "Current temperature ({{temp}}) exceeds the safe physiological threshold ({{threshold}}). Provide light frequent irrigation during cooler evening hours to cool the crop canopy. Avoid any pesticide/herbicide spraying during peak afternoon heat (11 AM to 4 PM)."
+      },
+      "pest_risk": {
+        "issue": "High Humidity & Warmth: Elevated {{pestName}} Risk on {{crop}}",
+        "recommendation": "Warm and humid conditions ({{temp}}) promote rapid fungal incubation and insect reproduction. Install 4-5 pheromone/yellow sticky traps per acre and inspect underside of leaves. Apply preventive bio-pesticide (Neem oil 1500 ppm @ 5ml/L or Trichoderma viride)."
+      },
+      "sowing_window": {
+        "issue": "Seasonal Agronomic & Sowing Window Guide for {{crop}}",
+        "recommendation": "Ensure certified seed treatment with bio-fungicide/Rhizobium @ 5g/kg before sowing. Maintain {{depth}} sowing depth in well-tilled moist soil. Apply balanced basal dose of NPK/DAP according to Soil Health Card guidelines."
+      }
+    },
+    "favourable": {
+      "mustard": {
+        "name": "Mustard (सरसों)",
+        "reason": "Requires {{waterSaving}} less water than wheat/paddy. Highly resilient in {{district}} with strong APMC market price realization."
+      },
+      "soybean": {
+        "name": "Soybean & Gram (चना)",
+        "reason": "Excellent drought resilience with nitrogen-fixing root nodules that improve soil fertility in {{district}}."
+      },
+      "pulses": {
+        "name": "Pulses / Chickpea (दालें)",
+        "reason": "Low water requirement ({{waterSaving}} water saving) with guaranteed Minimum Support Price (MSP) support."
+      },
+      "maize": {
+        "name": "Hybrid Maize (मक्का)",
+        "reason": "High yield potential in moderate rainfall conditions with growing industrial and feed market demand in {{district}}."
+      }
+    }
   },
   "market": {
     "title": "Mandi Market Prices",

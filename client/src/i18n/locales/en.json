@@ -75,7 +75,22 @@
     "cropHealthTitle": "Crop Recommendation",
     "mandiHighlight": "Nearby Mandi Rates Today",
     "viewMarket": "Check All Mandi Rates",
-    "getHelp": "Urgent Farmer Help"
+    "getHelp": "Urgent Farmer Help",
+    "distressCardTitle": "Farmer Distress Early-Warning Score",
+    "distressSubtitle": "Multi-factor vulnerability assessment based on rainfall, market prices, loan due date & wellbeing",
+    "distressRiskLevel": "Risk Level",
+    "distressScore": "Distress Index",
+    "triggeredFactorsTitle": "Key Factors Contributing to Vulnerability",
+    "noFactorsTriggered": "All conditions (rainfall, commodity prices, loan schedules) are currently stable.",
+    "alertRoutedTitle": "Automated Emergency Alert Dispatched (Demo)",
+    "alertRoutedSubtitle": "Case routed to nearest Agricultural Officer & Extension Counselor",
+    "routedOfficer": "Assigned Agri Officer",
+    "contactOfficer": "Direct Contact",
+    "callOfficerBtn": "Call Assigned Officer",
+    "refreshScoreBtn": "Recalculate Score",
+    "scoreSafe": "Low Vulnerability — Stable Condition",
+    "scoreModerate": "Moderate Risk — Monitoring Advised",
+    "scoreCritical": "High Distress — Immediate Support Required"
   },
   "advisory": {
     "title": "Crop Advisory & Weather Guide",

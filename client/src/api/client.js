@@ -120,11 +120,35 @@ export async function fetchCropAdvisory(district, crop) {
   return result.data;
 }
 
+/**
+ * Fetches computed distress score and early-warning signals for a farmer
+ * @param {string} farmerId - The farmer's UUID
+ * @returns {Promise<Object>} Distress score data object with score, riskLevel, triggeredFactors, and mockAlertRouting
+ */
+export async function fetchDistressScore(farmerId) {
+  if (!farmerId) return null;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/distress-score/${farmerId}`);
+    if (response.status === 404) {
+      return null;
+    }
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || `Failed to fetch distress score: ${response.status}`);
+    }
+    return result.data;
+  } catch (error) {
+    console.warn(`Could not fetch distress score for ${farmerId}:`, error.message);
+    return null;
+  }
+}
+
 export default {
   checkBackendHealth,
   createFarmer,
   updateFarmer,
   getFarmerById,
   fetchCropAdvisory,
+  fetchDistressScore,
   API_BASE_URL,
 };

@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const db = require('./db');
 const { getCropAdvisory } = require('./advisoryEngine');
+const { calculateDistressScore, getMockAlertRouting } = require('./distressScorer');
 
 // Load environment variables
 dotenv.config();
@@ -153,7 +154,87 @@ app.get('/api/schemes', async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------
-// Distress Scores Endpoints
+// Distress Risk Scorer Engine Endpoints
+// ------------------------------------------------------------------------------
+
+/**
+ * GET /api/distress-score/:farmerId
+ * Combines weather deviation, price drop, loan due date, and mood signals to compute
+ * distress score (0-100), persists to Supabase, and returns mock alert routing if high risk.
+ */
+app.get('/api/distress-score/:farmerId', async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+
+    // 1. Fetch farmer profile
+    const { data: farmer } = await db.getFarmerById(farmerId);
+    if (!farmer) {
+      return res.status(404).json({ error: 'Farmer not found' });
+    }
+
+    // 2. Fetch latest weather snapshot for farmer's district
+    const { data: weatherSnapshot } = await db.getWeatherSnapshot(farmer.district);
+    const weatherData = weatherSnapshot || {
+      district: farmer.district,
+      rainfall_mm: 5,
+      expected_rainfall_mm: 32,
+      temp_c: 33
+    };
+
+    // 3. Fetch recent crop prices history for farmer's crop and district
+    const { data: priceHistory } = await db.getPricesByCropAndDistrict(
+      farmer.primary_crop,
+      farmer.district
+    );
+
+    // 4. Fetch farmer's mood check-ins
+    const { data: moodHistory } = await db.getMoodHistory(farmer.id);
+
+    // 5. Calculate weighted distress score
+    const distressResult = calculateDistressScore(
+      farmer,
+      weatherData,
+      priceHistory || [],
+      moodHistory || []
+    );
+
+    // 6. Save result to distress_scores table in Supabase
+    await db.insertDistressScore({
+      farmer_id: farmer.id,
+      score: distressResult.score,
+      risk_level: distressResult.riskLevel,
+      triggered_factors: distressResult.triggeredFactors
+    });
+
+    // 7. If risk is high, generate mock alert routing info
+    const mockAlertRouting = distressResult.riskLevel === 'high'
+      ? getMockAlertRouting(distressResult.riskLevel, farmer.district)
+      : null;
+
+    res.json({
+      success: true,
+      data: {
+        farmerId: farmer.id,
+        farmerName: farmer.name,
+        district: farmer.district,
+        state: farmer.state,
+        crop: farmer.primary_crop,
+        score: distressResult.score,
+        riskLevel: distressResult.riskLevel,
+        triggeredFactors: distressResult.triggeredFactors,
+        breakdown: distressResult.breakdown,
+        mockAlertRouting,
+        calculatedAt: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('Error computing distress score:', error);
+    res.status(500).json({ error: error.message || 'Failed to compute distress score' });
+  }
+});
+
+// ------------------------------------------------------------------------------
+// Raw Distress Scores Endpoints
 // ------------------------------------------------------------------------------
 app.post('/api/distress', async (req, res) => {
   const { data, error } = await db.insertDistressScore(req.body);

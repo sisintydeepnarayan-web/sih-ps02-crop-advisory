@@ -12,43 +12,36 @@ import {
   CheckCircle2, 
   ShieldCheck, 
   AlertTriangle, 
-  RefreshCw,
-  Edit3
+  RefreshCw, 
+  Edit3 
 } from 'lucide-react';
 import { 
   STATE_DISTRICTS, 
   MAJOR_CROPS, 
   AVAILABLE_LANGUAGES, 
-  saveStoredProfile, 
-  getStoredProfile,
-  getStoredFarmerId,
-  clearStoredProfile
+  getStoredFarmerId, 
+  saveStoredFarmerId, 
+  clearStoredFarmerId 
 } from '../utils/helpers';
 import { createFarmer, updateFarmer, getFarmerById } from '../api/client';
 
 export default function Onboarding() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const initialProfile = getStoredProfile() || {};
-  const existingFarmerId = getStoredFarmerId() || initialProfile.id || null;
+  const existingFarmerId = getStoredFarmerId();
 
   // Farmer UUID (null for fresh registration, string for updates)
   const [farmerId, setFarmerId] = useState(existingFarmerId);
 
   // Form states
-  const [name, setName] = useState(initialProfile.name || '');
-  const [state, setState] = useState(initialProfile.state || 'Maharashtra');
-  const [district, setDistrict] = useState(initialProfile.district || 'Nashik');
-  const [primaryCrop, setPrimaryCrop] = useState(
-    initialProfile.primary_crop || initialProfile.crop || 'wheat'
-  );
-  const [landSize, setLandSize] = useState(
-    initialProfile.land_size ? String(initialProfile.land_size) : '2.5'
-  );
+  const [name, setName] = useState('');
+  const [state, setState] = useState('Maharashtra');
+  const [district, setDistrict] = useState('Nashik');
+  const [primaryCrop, setPrimaryCrop] = useState('wheat');
+  const [landSize, setLandSize] = useState('2.5');
   
   // Default loan due date: 30 days from now
   const defaultDueDate = () => {
-    if (initialProfile.loan_due_date) return initialProfile.loan_due_date;
     const d = new Date();
     d.setDate(d.getDate() + 30);
     return d.toISOString().split('T')[0];
@@ -56,7 +49,7 @@ export default function Onboarding() {
 
   const [loanDueDate, setLoanDueDate] = useState(defaultDueDate());
   const [preferredLanguage, setPreferredLanguage] = useState(
-    initialProfile.preferred_language || (i18n.language?.startsWith('mr') ? 'mr' : i18n.language?.startsWith('hi') ? 'hi' : 'en')
+    i18n.language?.startsWith('mr') ? 'mr' : i18n.language?.startsWith('hi') ? 'hi' : 'en'
   );
 
   // Status & Validation states
@@ -69,14 +62,14 @@ export default function Onboarding() {
   const isMarathi = i18n.language?.startsWith('mr');
   const isHindi = i18n.language?.startsWith('hi');
 
-  // Load existing farmer data on mount if ID exists; if invalid or deleted in DB, clear stale ID
+  // Load fresh farmer data directly from Supabase via getFarmerById on mount
   useEffect(() => {
     if (existingFarmerId) {
       setIsLoadingProfile(true);
       getFarmerById(existingFarmerId)
         .then((farmer) => {
           if (farmer && farmer.id) {
-            // Farmer exists in DB -> prefill form with latest data
+            // Populate form fields directly from the database row
             setFarmerId(farmer.id);
             setName(farmer.name || '');
             if (farmer.state) setState(farmer.state);
@@ -92,21 +85,15 @@ export default function Onboarding() {
               }
             }
           } else {
-            // Farmer ID no longer exists in Supabase -> clear stale ID and treat as fresh signup
-            console.log('Stored farmer ID is not found in database. Resetting to fresh signup.');
-            clearStoredProfile();
+            // Farmer ID does not exist in DB -> clear stale ID and treat as fresh signup
+            console.log('Farmer ID not found in database. Resetting to fresh signup.');
+            clearStoredFarmerId();
             setFarmerId(null);
-            setName('');
-            setPrimaryCrop('wheat');
-            setLandSize('2.5');
-            const d = new Date();
-            d.setDate(d.getDate() + 30);
-            setLoanDueDate(d.toISOString().split('T')[0]);
           }
         })
         .catch((err) => {
-          console.warn('Could not verify profile with server, resetting stale state:', err.message);
-          clearStoredProfile();
+          console.warn('Could not verify farmer profile from server:', err.message);
+          clearStoredFarmerId();
           setFarmerId(null);
         })
         .finally(() => {
@@ -205,12 +192,10 @@ export default function Onboarding() {
         savedFarmer = await createFarmer(payload);
       }
 
-      // 3. Store returned farmer profile in localStorage for persistent access
-      saveStoredProfile({
-        ...savedFarmer,
-        setupCompleted: true,
-        updatedAt: new Date().toISOString(),
-      });
+      // 3. Store ONLY the farmer UUID in localStorage (no full profile caching)
+      if (savedFarmer && savedFarmer.id) {
+        saveStoredFarmerId(savedFarmer.id);
+      }
 
       // 4. Navigate to Dashboard
       navigate('/dashboard');
@@ -257,6 +242,14 @@ export default function Onboarding() {
               {apiError}
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Loading Skeleton during profile fetch */}
+      {isLoadingProfile && (
+        <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm text-center space-y-2 mb-6">
+          <RefreshCw size={28} className="animate-spin text-emerald-700 mx-auto" />
+          <p className="text-sm font-black text-gray-700">{t('common.loading')}</p>
         </div>
       )}
 

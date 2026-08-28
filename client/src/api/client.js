@@ -143,6 +143,25 @@ export async function fetchDistressScore(farmerId) {
   }
 }
 
+/**
+ * Fetches historical APMC Mandi commodity crop prices
+ * @param {string} crop - Crop name (e.g. 'wheat', 'cotton', 'soybean')
+ * @param {string} district - District name (e.g. 'Nashik', 'Pune')
+ * @returns {Promise<Array>} List of price records { id, crop_name, district, price_per_quintal, date }
+ */
+export async function fetchCropPrices(crop, district) {
+  const params = new URLSearchParams();
+  if (crop) params.append('crop', crop);
+  if (district) params.append('district', district);
+
+  const response = await fetch(`${API_BASE_URL}/api/prices?${params.toString()}`);
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || `Failed to fetch prices: ${response.status}`);
+  }
+  return result.data || [];
+}
+
 export default {
   checkBackendHealth,
   createFarmer,
@@ -150,5 +169,6 @@ export default {
   getFarmerById,
   fetchCropAdvisory,
   fetchDistressScore,
+  fetchCropPrices,
   API_BASE_URL,
 };

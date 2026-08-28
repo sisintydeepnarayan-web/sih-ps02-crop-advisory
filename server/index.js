@@ -84,7 +84,7 @@ app.get('/api/prices', async (req, res) => {
   const { crop, district } = req.query;
   const { data, error } = await db.getPricesByCropAndDistrict(crop, district);
   if (error) return res.status(400).json({ error: error.message });
-  res.json({ data });
+  res.json({ data: data || [] });
 });
 
 app.post('/api/prices', async (req, res) => {

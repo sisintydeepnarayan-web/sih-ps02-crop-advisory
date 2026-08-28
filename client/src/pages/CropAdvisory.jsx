@@ -19,20 +19,16 @@ import {
   Wheat 
 } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
-import { getStoredProfile, STATE_DISTRICTS, MAJOR_CROPS } from '../utils/helpers';
-import { fetchCropAdvisory } from '../api/client';
+import { getStoredFarmerId, STATE_DISTRICTS, MAJOR_CROPS } from '../utils/helpers';
+import { fetchCropAdvisory, getFarmerById } from '../api/client';
 
 export default function CropAdvisory() {
   const { t, i18n } = useTranslation();
-  const profile = getStoredProfile() || {};
+  const farmerId = getStoredFarmerId();
 
   // Active district & crop selections
-  const [selectedDistrict, setSelectedDistrict] = useState(
-    profile.district || 'Nashik'
-  );
-  const [selectedCrop, setSelectedCrop] = useState(
-    profile.primary_crop || profile.crop || 'wheat'
-  );
+  const [selectedDistrict, setSelectedDistrict] = useState('Nashik');
+  const [selectedCrop, setSelectedCrop] = useState('wheat');
 
   // Advisory data & UI state
   const [advisoryData, setAdvisoryData] = useState(null);
@@ -54,9 +50,31 @@ export default function CropAdvisory() {
     }
   };
 
+  // On mount, fetch fresh farmer profile from Supabase first
   useEffect(() => {
-    loadAdvisory(selectedDistrict, selectedCrop);
-  }, []);
+    const initAdvisory = async () => {
+      let district = 'Nashik';
+      let crop = 'wheat';
+
+      if (farmerId) {
+        try {
+          const freshFarmer = await getFarmerById(farmerId);
+          if (freshFarmer) {
+            if (freshFarmer.district) district = freshFarmer.district;
+            if (freshFarmer.primary_crop) crop = freshFarmer.primary_crop;
+          }
+        } catch (err) {
+          console.warn('Could not fetch fresh farmer for advisory:', err.message);
+        }
+      }
+
+      setSelectedDistrict(district);
+      setSelectedCrop(crop);
+      loadAdvisory(district, crop);
+    };
+
+    initAdvisory();
+  }, [farmerId]);
 
   const handleFilterSubmit = (e) => {
     e.preventDefault();

@@ -13,68 +13,90 @@ import {
   ShieldCheck,
   Activity,
   RefreshCw,
-  UserCheck,
-  Clock,
   Radio
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ActionCard from '../components/ActionCard';
-import { getStoredProfile, getStoredFarmerId } from '../utils/helpers';
-import { fetchDistressScore } from '../api/client';
+import { getStoredFarmerId, clearStoredFarmerId } from '../utils/helpers';
+import { fetchDistressScore, getFarmerById } from '../api/client';
 
 export default function Dashboard() {
   const { t } = useTranslation();
-  const profile = getStoredProfile() || { name: '', district: 'Nashik', primary_crop: 'wheat' };
-  const farmerId = getStoredFarmerId() || profile.id || null;
-  const cropDisplay = (profile.primary_crop || profile.crop || 'wheat').toUpperCase();
+  const farmerId = getStoredFarmerId();
+
+  // Fresh farmer profile fetched from database
+  const [farmer, setFarmer] = useState(null);
+  const [loadingFarmer, setLoadingFarmer] = useState(true);
 
   // Distress Score state
   const [distressData, setDistressData] = useState(null);
   const [loadingDistress, setLoadingDistress] = useState(false);
-  const [distressError, setDistressError] = useState(null);
 
-  const loadDistressScore = async () => {
-    if (!farmerId) {
-      // Fallback baseline for unregistered preview
-      setDistressData({
-        score: 25,
-        riskLevel: 'low',
-        triggeredFactors: [
-          'Weather conditions, market commodity rates, and loan repayment timelines are currently within stable limits.'
-        ],
-        mockAlertRouting: null,
-      });
-      return;
-    }
+  // Load fresh farmer details & distress score on mount
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      setLoadingFarmer(true);
 
-    setLoadingDistress(true);
-    setDistressError(null);
-    try {
-      const data = await fetchDistressScore(farmerId);
-      if (data) {
-        setDistressData(data);
-      } else {
-        // Fallback default
+      if (!farmerId) {
+        setFarmer(null);
+        setLoadingFarmer(false);
         setDistressData({
-          score: 30,
+          score: 25,
           riskLevel: 'low',
           triggeredFactors: [
-            'All conditions (rainfall, commodity prices, loan schedules) are currently stable.'
+            'Weather conditions, market commodity rates, and loan repayment timelines are currently within stable limits.'
           ],
           mockAlertRouting: null,
         });
+        return;
+      }
+
+      try {
+        // 1. Fetch fresh farmer row from Supabase
+        const freshFarmer = await getFarmerById(farmerId);
+        if (freshFarmer && freshFarmer.id) {
+          setFarmer(freshFarmer);
+          
+          // 2. Fetch fresh distress score for this farmer
+          setLoadingDistress(true);
+          const scoreData = await fetchDistressScore(freshFarmer.id);
+          if (scoreData) {
+            setDistressData(scoreData);
+          }
+        } else {
+          // If farmer no longer exists in Supabase, clear stale ID
+          console.log('Farmer record no longer in database, resetting state...');
+          clearStoredFarmerId();
+          setFarmer(null);
+        }
+      } catch (err) {
+        console.warn('Dashboard data fetch warning:', err.message);
+      } finally {
+        setLoadingFarmer(false);
+        setLoadingDistress(false);
+      }
+    };
+
+    loadDashboardData();
+  }, [farmerId]);
+
+  const handleRefreshDistress = async () => {
+    if (!farmerId) return;
+    setLoadingDistress(true);
+    try {
+      const scoreData = await fetchDistressScore(farmerId);
+      if (scoreData) {
+        setDistressData(scoreData);
       }
     } catch (err) {
-      console.warn('Could not fetch distress score:', err.message);
-      setDistressError(err.message);
+      console.warn('Could not refresh distress score:', err.message);
     } finally {
       setLoadingDistress(false);
     }
   };
 
-  useEffect(() => {
-    loadDistressScore();
-  }, [farmerId]);
+  const cropDisplay = (farmer?.primary_crop || 'wheat').toUpperCase();
+  const farmerDistrict = farmer?.district || 'India';
 
   // Color styles based on risk level
   const getRiskStyles = (level = 'low') => {
@@ -118,19 +140,20 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4 pb-28 space-y-5">
+      
       {/* Top Banner / Farmer Greeting */}
       <div className="bg-emerald-800 text-white rounded-3xl p-5 shadow-sm flex items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-1.5 text-emerald-200 text-xs font-bold uppercase tracking-wider mb-1">
             <MapPin size={14} />
             <span>
-              {profile.district || 'India'}
-              {profile.state ? `, ${profile.state}` : ''} • {cropDisplay}
-              {profile.land_size ? ` • ${profile.land_size} Acres` : ''}
+              {farmerDistrict}
+              {farmer?.state ? `, ${farmer.state}` : ''} • {cropDisplay}
+              {farmer?.land_size ? ` • ${farmer.land_size} Acres` : ''}
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black">
-            {t('dashboard.greeting')} {profile.name ? `, ${profile.name}` : ''} 🙏
+            {t('dashboard.greeting')} {farmer?.name ? `, ${farmer.name}` : ''} 🙏
           </h2>
           <p className="text-xs sm:text-sm text-emerald-100 font-medium mt-0.5">
             {t('app.tagline')}
@@ -140,7 +163,7 @@ export default function Dashboard() {
           to="/onboarding"
           className="bg-emerald-900/80 hover:bg-emerald-950 text-white px-3.5 py-2.5 rounded-2xl text-xs font-bold border border-emerald-600/50 shrink-0 text-center shadow-sm active:scale-95 transition-transform"
         >
-          {t('nav.onboarding')}
+          {farmer?.id ? t('nav.onboarding') : 'Setup Profile'}
         </Link>
       </div>
 
@@ -168,7 +191,7 @@ export default function Dashboard() {
 
             <button
               type="button"
-              onClick={loadDistressScore}
+              onClick={handleRefreshDistress}
               disabled={loadingDistress}
               title={t('dashboard.refreshScoreBtn')}
               className="p-2.5 bg-white hover:bg-gray-100 rounded-xl border border-black/10 text-gray-700 shadow-sm shrink-0 active:scale-95 transition-transform"
@@ -206,7 +229,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Triggered Factors (Plain language non-technical summaries for NGO / Field Officers) */}
+          {/* Triggered Factors */}
           <div className="space-y-2">
             <h4 className="text-xs font-black uppercase tracking-wider text-gray-800 flex items-center gap-1.5">
               <AlertTriangle size={14} className="text-amber-700" />

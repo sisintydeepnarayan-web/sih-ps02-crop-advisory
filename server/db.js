@@ -152,14 +152,16 @@ async function getPricesByCropAndDistrict(crop, district) {
       .select('*')
       .order('date', { ascending: false });
 
-    // Apply case-insensitive filter for crop if provided
-    if (crop) {
-      query = query.ilike('crop_name', `%${crop}%`);
+    // Apply case-insensitive filter for crop_name if provided
+    if (crop && typeof crop === 'string' && crop.trim()) {
+      const cleanCrop = crop.trim().toLowerCase();
+      query = query.ilike('crop_name', `%${cleanCrop}%`);
     }
 
     // Apply case-insensitive filter for district if provided
-    if (district) {
-      query = query.ilike('district', `%${district}%`);
+    if (district && typeof district === 'string' && district.trim()) {
+      const cleanDistrict = district.trim().toLowerCase();
+      query = query.ilike('district', `%${cleanDistrict}%`);
     }
 
     const { data: prices, error } = await query;
@@ -168,7 +170,7 @@ async function getPricesByCropAndDistrict(crop, district) {
     return { data: prices || [], error: null };
   } catch (error) {
     console.error('Error in getPricesByCropAndDistrict:', error.message);
-    return { data: null, error };
+    return { data: [], error };
   }
 }
 

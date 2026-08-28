@@ -42,40 +42,50 @@ export const AVAILABLE_LANGUAGES = [
   { code: 'en', label: 'English', flag: '🌐' },
 ];
 
-// Profile storage helpers
-export function getStoredProfile() {
-  try {
-    const data = localStorage.getItem('farmer_profile');
-    return data ? JSON.parse(data) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function saveStoredProfile(profile) {
-  try {
-    localStorage.setItem('farmer_profile', JSON.stringify(profile));
-    if (profile?.id) {
-      localStorage.setItem('farmer_id', profile.id);
-    }
-  } catch (e) {
-    console.error('Failed to save profile', e);
-  }
-}
-
+// Storage helpers - Strictly stores only the farmer UUID in localStorage
 export function getStoredFarmerId() {
   try {
-    return localStorage.getItem('farmer_id') || getStoredProfile()?.id || null;
+    // If legacy farmer_profile exists, clean it up
+    if (localStorage.getItem('farmer_profile')) {
+      const legacy = localStorage.getItem('farmer_profile');
+      try {
+        const parsed = JSON.parse(legacy);
+        if (parsed?.id && !localStorage.getItem('farmer_id')) {
+          localStorage.setItem('farmer_id', parsed.id);
+        }
+      } catch (_) {}
+      localStorage.removeItem('farmer_profile');
+    }
+    return localStorage.getItem('farmer_id') || null;
   } catch {
     return null;
   }
 }
 
-export function clearStoredProfile() {
+export function saveStoredFarmerId(id) {
   try {
+    if (id) {
+      localStorage.setItem('farmer_id', String(id));
+    }
+    // Ensure full profile is never saved to localStorage
     localStorage.removeItem('farmer_profile');
-    localStorage.removeItem('farmer_id');
   } catch (e) {
-    console.error('Failed to clear stored profile', e);
+    console.error('Failed to save farmer_id', e);
   }
 }
+
+export function clearStoredFarmerId() {
+  try {
+    localStorage.removeItem('farmer_id');
+    localStorage.removeItem('farmer_profile');
+  } catch (e) {
+    console.error('Failed to clear stored farmer_id', e);
+  }
+}
+
+// Deprecated aliases for backwards-compatibility that only deal with ID
+export const getStoredProfile = () => null;
+export const saveStoredProfile = (profile) => {
+  if (profile?.id) saveStoredFarmerId(profile.id);
+};
+export const clearStoredProfile = clearStoredFarmerId;

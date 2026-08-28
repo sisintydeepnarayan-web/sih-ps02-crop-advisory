@@ -1,53 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, ShieldCheck, CreditCard, Sprout, ExternalLink, HelpCircle } from 'lucide-react';
+import { 
+  FileText, 
+  Search, 
+  PhoneCall, 
+  ExternalLink, 
+  CheckCircle2, 
+  AlertCircle, 
+  RefreshCw, 
+  X,
+  Building2,
+  Sparkles
+} from 'lucide-react';
 import PageHeader from '../components/PageHeader';
+import { fetchSchemes } from '../api/client';
 
 export default function SchemesDirectory() {
   const { t } = useTranslation();
 
-  const schemes = [
-    {
-      id: 'pm-kisan',
-      title: t('schemes.pmKisanTitle'),
-      desc: t('schemes.pmKisanDesc'),
-      icon: Sprout,
-      benefit: '₹6,000 / Year',
-      benefitColor: 'bg-emerald-100 text-emerald-800',
-      officialPortal: 'https://pmkisan.gov.in',
-      portalLabel: 'pmkisan.gov.in',
-    },
-    {
-      id: 'pmfby',
-      title: t('schemes.pmfbyTitle'),
-      desc: t('schemes.pmfbyDesc'),
-      icon: ShieldCheck,
-      benefit: '100% Risk Cover',
-      benefitColor: 'bg-blue-100 text-blue-800',
-      officialPortal: 'https://pmfby.gov.in',
-      portalLabel: 'pmfby.gov.in',
-    },
-    {
-      id: 'kcc',
-      title: t('schemes.kccTitle'),
-      desc: t('schemes.kccDesc'),
-      icon: CreditCard,
-      benefit: '4% Concessional Interest',
-      benefitColor: 'bg-purple-100 text-purple-800',
-      officialPortal: 'https://myscheme.gov.in',
-      portalLabel: 'myscheme.gov.in',
-    },
-    {
-      id: 'soil-card',
-      title: t('schemes.soilCardTitle'),
-      desc: t('schemes.soilCardDesc'),
-      icon: FileText,
-      benefit: 'Free Soil Testing',
-      benefitColor: 'bg-amber-100 text-amber-800',
-      officialPortal: 'https://soilhealth.dac.gov.in',
-      portalLabel: 'soilhealth.dac.gov.in',
-    },
-  ];
+  // State
+  const [schemes, setSchemes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Debounce search input by 300ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  // Load schemes from backend API
+  const loadSchemes = async (query = '') => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchSchemes(query);
+      setSchemes(data || []);
+    } catch (err) {
+      console.error('Failed to load schemes:', err);
+      setError(err.message || 'Failed to load schemes');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSchemes(debouncedSearch);
+  }, [debouncedSearch]);
+
+  // Extract a clean phone number from contact_info string (e.g. "155261 / 011-24300606" -> "155261")
+  const getPrimaryPhone = (contactStr) => {
+    if (!contactStr) return null;
+    const match = contactStr.match(/[\d-]{3,15}/);
+    return match ? match[0].replace(/-/g, '') : null;
+  };
 
   return (
     <div className="max-w-4xl mx-auto pb-28">
@@ -58,47 +69,166 @@ export default function SchemesDirectory() {
       />
 
       <div className="px-4 space-y-4">
-        {schemes.map((scheme) => {
-          const Icon = scheme.icon;
-          return (
-            <div
-              key={scheme.id}
-              className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-4 hover:shadow-md transition-shadow"
+        
+        {/* Search Bar with Clear Button */}
+        <div className="relative">
+          <Search 
+            size={20} 
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" 
+          />
+          <input
+            type="text"
+            placeholder={t('schemes.searchPlaceholder')}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-14 pl-12 pr-12 bg-white border-2 border-gray-300 rounded-2xl text-base font-bold text-gray-900 focus:border-emerald-600 focus:outline-none shadow-sm placeholder:text-gray-400 placeholder:font-medium"
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition-colors"
+              title={t('schemes.clearSearch')}
             >
-              <div className="flex items-start gap-3.5">
-                <div className="p-3 bg-emerald-50 text-emerald-700 rounded-2xl shrink-0">
-                  <Icon size={26} className="stroke-[2.3]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-                    <h3 className="text-lg font-black text-gray-900 leading-tight">
-                      {scheme.title}
-                    </h3>
-                    <span className={`text-xs font-black px-2.5 py-1 rounded-full ${scheme.benefitColor}`}>
-                      {scheme.benefit}
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-gray-700 leading-relaxed">
-                    {scheme.desc}
-                  </p>
-                </div>
-              </div>
+              <X size={18} />
+            </button>
+          )}
+        </div>
 
-              <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-3">
-                <span className="text-xs font-bold text-gray-500">Official Portal</span>
-                <a
-                  href={scheme.officialPortal}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-black text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl transition-colors"
-                >
-                  <span>{scheme.portalLabel}</span>
-                  <ExternalLink size={14} />
-                </a>
-              </div>
+        {/* Results Header Count */}
+        {!loading && (
+          <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-gray-700 px-1">
+            <span className="flex items-center gap-1.5">
+              <Building2 size={15} className="text-emerald-700" />
+              <span>{t('schemes.totalSchemes')}</span>
+            </span>
+            <span className="bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full font-black">
+              {schemes.length}
+            </span>
+          </div>
+        )}
+
+        {/* Loading Spinner */}
+        {loading && (
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm text-center space-y-2">
+            <RefreshCw size={28} className="animate-spin text-emerald-700 mx-auto" />
+            <p className="text-sm font-black text-gray-700">{t('common.loading')}</p>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {error && (
+          <div className="bg-red-50 border-2 border-red-400 rounded-3xl p-5 flex items-center gap-3 text-red-950 shadow-sm">
+            <AlertCircle size={24} className="text-red-600 shrink-0" />
+            <p className="text-sm font-bold text-red-900">{error}</p>
+          </div>
+        )}
+
+        {/* Empty State: No Schemes Found */}
+        {!loading && !error && schemes.length === 0 && (
+          <div className="bg-white rounded-3xl p-8 border-2 border-dashed border-gray-300 text-center space-y-3 shadow-sm">
+            <div className="p-3 bg-amber-100 text-amber-800 rounded-2xl w-fit mx-auto">
+              <AlertCircle size={32} />
             </div>
-          );
-        })}
+            <h4 className="text-lg font-black text-gray-900">
+              {t('schemes.noSchemesFound')}
+            </h4>
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="mt-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-sm active:scale-95 transition-transform"
+              >
+                {t('schemes.clearSearch')}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Schemes Cards List */}
+        {!loading && !error && schemes.length > 0 && (
+          <div className="space-y-4">
+            {schemes.map((scheme) => {
+              const primaryPhone = getPrimaryPhone(scheme.contact_info);
+
+              return (
+                <div
+                  key={scheme.id}
+                  className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-gray-200 shadow-sm space-y-4 hover:shadow-md hover:border-emerald-200 transition-all"
+                >
+                  {/* Card Title & Badge */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="p-3 bg-emerald-100 text-emerald-800 rounded-2xl shrink-0">
+                      <Sparkles size={24} className="stroke-[2.3]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg sm:text-xl font-black text-gray-950 leading-tight">
+                        {scheme.name}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-700 mt-1.5 leading-relaxed">
+                        {scheme.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Eligibility Section */}
+                  {scheme.eligibility && (
+                    <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3.5 space-y-1">
+                      <p className="text-[11px] font-black uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-emerald-700" />
+                        <span>{t('schemes.eligibilityLabel')}</span>
+                      </p>
+                      <p className="text-xs sm:text-sm font-bold text-emerald-950 leading-normal">
+                        {scheme.eligibility}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Actions & Contact Bar */}
+                  <div className="pt-2 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    {/* Contact Info / Phone Call Link */}
+                    {scheme.contact_info ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-500">
+                          {t('schemes.contactLabel')}:
+                        </span>
+                        {primaryPhone ? (
+                          <a
+                            href={`tel:${primaryPhone}`}
+                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl border border-red-200 shadow-sm active:scale-95 transition-transform"
+                          >
+                            <PhoneCall size={14} className="stroke-[2.5]" />
+                            <span>{scheme.contact_info}</span>
+                          </a>
+                        ) : (
+                          <span className="text-xs font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg">
+                            {scheme.contact_info}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div />
+                    )}
+
+                    {/* Official Portal External Link */}
+                    {scheme.link && (
+                      <a
+                        href={scheme.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-black text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-4 py-2 rounded-xl transition-colors shrink-0 shadow-sm active:scale-95"
+                      >
+                        <span>{t('schemes.officialPortalBtn')}</span>
+                        <ExternalLink size={14} className="stroke-[2.5]" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
       </div>
     </div>
   );

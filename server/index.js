@@ -150,7 +150,14 @@ app.get('/api/schemes', async (req, res) => {
   const { q } = req.query;
   const { data, error } = q ? await db.searchSchemes(q) : await db.getAllSchemes();
   if (error) return res.status(400).json({ error: error.message });
-  res.json({ data });
+  res.json({ data: data || [] });
+});
+
+app.get('/api/schemes/search', async (req, res) => {
+  const { q } = req.query;
+  const { data, error } = await db.searchSchemes(q);
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ data: data || [] });
 });
 
 // ------------------------------------------------------------------------------

@@ -162,6 +162,25 @@ export async function fetchCropPrices(crop, district) {
   return result.data || [];
 }
 
+/**
+ * Fetches government schemes from backend with optional text search query
+ * @param {string} [query] - Optional search keyword
+ * @returns {Promise<Array>} List of schemes { id, name, description, eligibility, contact_info, link }
+ */
+export async function fetchSchemes(query = '') {
+  const cleanQuery = query ? query.trim() : '';
+  const url = cleanQuery
+    ? `${API_BASE_URL}/api/schemes/search?q=${encodeURIComponent(cleanQuery)}`
+    : `${API_BASE_URL}/api/schemes`;
+
+  const response = await fetch(url);
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.error || `Failed to fetch schemes: ${response.status}`);
+  }
+  return result.data || [];
+}
+
 export default {
   checkBackendHealth,
   createFarmer,
@@ -170,5 +189,6 @@ export default {
   fetchCropAdvisory,
   fetchDistressScore,
   fetchCropPrices,
+  fetchSchemes,
   API_BASE_URL,
 };

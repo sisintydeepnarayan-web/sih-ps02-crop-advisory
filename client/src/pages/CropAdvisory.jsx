@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Sprout, 
-  Droplets, 
-  Bug, 
-  Sun, 
-  Waves, 
-  ShieldAlert, 
-  CheckCircle2, 
-  Calendar, 
-  Thermometer, 
   CloudRain, 
-  RefreshCw, 
+  Sun, 
+  Thermometer, 
+  AlertTriangle, 
+  ShieldAlert, 
+  ShieldCheck, 
+  Bug, 
+  Calendar, 
+  Droplets, 
   Sparkles, 
   PhoneCall, 
   Filter, 
+  RefreshCw, 
   MapPin, 
   Wheat 
 } from 'lucide-react';
@@ -82,55 +82,53 @@ export default function CropAdvisory() {
     loadAdvisory(selectedDistrict, selectedCrop);
   };
 
-  // Helper to pick category icon
+  // Category Icon Resolver
   const getCategoryIcon = (category) => {
     switch (category) {
-      case 'irrigation':
+      case 'drought_stress':
         return Droplets;
-      case 'drainage':
-        return Waves;
-      case 'protection':
+      case 'waterlogging':
+        return CloudRain;
+      case 'heat_stress':
         return Sun;
-      case 'pest_control':
+      case 'pest_risk':
         return Bug;
-      case 'sowing':
+      case 'sowing_window':
+        return Calendar;
+      case 'optimal':
       default:
         return Sprout;
     }
   };
 
-  // Severity color styles
+  // Severity color styles with high contrast
   const getSeverityStyles = (severity) => {
     switch (severity) {
       case 'high':
         return {
-          card: 'bg-red-50/80 border-red-300 text-red-950',
-          badge: 'bg-red-600 text-white',
+          card: 'bg-red-50/95 border-red-300 text-red-950',
+          badge: 'bg-red-700 text-white font-black',
           iconBg: 'bg-red-100 text-red-700',
-          border: 'border-red-400',
           label: t('advisory.severityLabels.high'),
         };
       case 'medium':
         return {
-          card: 'bg-amber-50/80 border-amber-300 text-amber-950',
-          badge: 'bg-amber-600 text-white',
+          card: 'bg-amber-50/95 border-amber-300 text-amber-950',
+          badge: 'bg-amber-800 text-white font-black',
           iconBg: 'bg-amber-100 text-amber-800',
-          border: 'border-amber-400',
           label: t('advisory.severityLabels.medium'),
         };
       case 'low':
       default:
         return {
-          card: 'bg-emerald-50/80 border-emerald-300 text-emerald-950',
-          badge: 'bg-emerald-700 text-white',
+          card: 'bg-emerald-50/95 border-emerald-300 text-emerald-950',
+          badge: 'bg-emerald-800 text-white font-black',
           iconBg: 'bg-emerald-100 text-emerald-800',
-          border: 'border-emerald-400',
           label: t('advisory.severityLabels.low'),
         };
     }
   };
 
-  // District list for quick filter
   const allDistricts = Object.values(STATE_DISTRICTS).flat();
   const isMarathi = i18n.language?.startsWith('mr');
   const isHindi = i18n.language?.startsWith('hi');
@@ -146,14 +144,14 @@ export default function CropAdvisory() {
       <div className="px-4 space-y-4">
         
         {/* District & Crop Selector Toggle */}
-        <div className="flex items-center justify-between gap-3 bg-white rounded-2xl p-3.5 border border-gray-200 shadow-sm">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="p-2 rounded-xl bg-emerald-100 text-emerald-800 shrink-0">
-              <MapPin size={18} />
+        <div className="flex items-center justify-between gap-3 bg-white rounded-3xl p-4 sm:p-5 border-2 border-gray-200 shadow-sm">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2.5 rounded-2xl bg-emerald-100 text-emerald-900 shrink-0">
+              <MapPin size={22} className="stroke-[2.5]" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-gray-500 uppercase">{t('common.district')} & {t('common.crop')}</p>
-              <p className="text-sm font-black text-gray-900 truncate">
+              <p className="text-base sm:text-lg font-black text-gray-950 truncate">
                 {selectedDistrict} • {selectedCrop.toUpperCase()}
               </p>
             </div>
@@ -162,17 +160,17 @@ export default function CropAdvisory() {
           <button
             type="button"
             onClick={() => setShowFilter(!showFilter)}
-            className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center gap-1.5 shrink-0 active:scale-95 transition-transform shadow-sm"
+            className="min-h-[44px] px-4 py-2 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs sm:text-sm font-black flex items-center gap-1.5 shrink-0 transition-colors shadow-sm"
           >
-            <Filter size={14} />
+            <Filter size={15} />
             <span>{t('advisory.filterTitle')}</span>
           </button>
         </div>
 
         {/* Expandable Filter Box */}
         {showFilter && (
-          <form onSubmit={handleFilterSubmit} className="bg-white rounded-3xl p-5 border-2 border-emerald-500 shadow-md space-y-4 animate-in fade-in">
-            <h4 className="text-base font-black text-gray-900 flex items-center gap-2">
+          <form onSubmit={handleFilterSubmit} className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-500 shadow-md space-y-4">
+            <h4 className="text-base sm:text-lg font-black text-gray-950 flex items-center gap-2">
               <Filter size={18} className="text-emerald-700" />
               <span>{t('advisory.filterTitle')}</span>
             </h4>
@@ -183,7 +181,7 @@ export default function CropAdvisory() {
                 <select
                   value={selectedDistrict}
                   onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="w-full h-12 px-3 bg-gray-50 border-2 border-gray-300 rounded-xl text-sm font-bold text-gray-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                  className="w-full h-13 px-3 bg-gray-50 border-2 border-gray-300 rounded-2xl text-sm font-bold text-gray-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
                 >
                   {allDistricts.map((d) => (
                     <option key={d} value={d}>
@@ -198,7 +196,7 @@ export default function CropAdvisory() {
                 <select
                   value={selectedCrop}
                   onChange={(e) => setSelectedCrop(e.target.value)}
-                  className="w-full h-12 px-3 bg-gray-50 border-2 border-gray-300 rounded-xl text-sm font-bold text-gray-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                  className="w-full h-13 px-3 bg-gray-50 border-2 border-gray-300 rounded-2xl text-sm font-bold text-gray-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
                 >
                   {MAJOR_CROPS.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -211,9 +209,9 @@ export default function CropAdvisory() {
 
             <button
               type="submit"
-              className="w-full h-12 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
+              className="w-full min-h-[50px] bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition-colors"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={18} />
               <span>{t('advisory.refreshBtn')}</span>
             </button>
           </form>
@@ -230,12 +228,12 @@ export default function CropAdvisory() {
         {/* Error State */}
         {error && !loading && (
           <div className="bg-red-50 border-2 border-red-300 rounded-3xl p-6 text-center space-y-3">
-            <ShieldAlert size={36} className="text-red-600 mx-auto" />
-            <p className="text-sm font-bold text-red-900">{error}</p>
+            <ShieldAlert size={36} className="text-red-700 mx-auto" />
+            <p className="text-sm font-bold text-red-950">{error}</p>
             <button
               type="button"
               onClick={() => loadAdvisory(selectedDistrict, selectedCrop)}
-              className="px-4 py-2 bg-red-600 text-white font-black text-xs rounded-xl"
+              className="min-h-[44px] px-5 py-2 bg-red-700 text-white font-black text-xs rounded-xl shadow-sm"
             >
               {t('common.retry')}
             </button>
@@ -247,50 +245,50 @@ export default function CropAdvisory() {
           <div className="space-y-4">
             
             {/* 1. Weather Snapshot Card */}
-            <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm space-y-3">
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-gray-200 shadow-sm space-y-3.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-blue-100 text-blue-700">
-                    <CloudRain size={20} />
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2.5 rounded-xl bg-blue-100 text-blue-900">
+                    <CloudRain size={22} className="stroke-[2.5]" />
                   </div>
-                  <h3 className="text-base font-black text-gray-900">
+                  <h3 className="text-base sm:text-lg font-black text-gray-950">
                     {t('advisory.weatherSnapshot')}
                   </h3>
                 </div>
-                <span className="text-xs font-bold text-gray-500">
+                <span className="text-xs font-black uppercase text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
                   {selectedDistrict}
                 </span>
               </div>
 
               <div className="grid grid-cols-3 gap-2.5 pt-1">
                 {/* Temperature */}
-                <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 text-center">
-                  <p className="text-[11px] font-bold text-amber-900 flex items-center justify-center gap-1">
+                <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-3 text-center">
+                  <p className="text-[11px] font-black uppercase text-amber-900 flex items-center justify-center gap-1">
                     <Thermometer size={14} />
                     <span>{t('advisory.temperature')}</span>
                   </p>
-                  <p className="text-lg font-black text-amber-950 mt-0.5">
+                  <p className="text-lg sm:text-xl font-black text-amber-950 mt-0.5">
                     {advisoryData.weather?.temp_c}°C
                   </p>
                 </div>
 
                 {/* Actual Rainfall */}
-                <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-3 text-center">
-                  <p className="text-[11px] font-bold text-blue-900 flex items-center justify-center gap-1">
+                <div className="bg-blue-50/90 border border-blue-200 rounded-2xl p-3 text-center">
+                  <p className="text-[11px] font-black uppercase text-blue-900 flex items-center justify-center gap-1">
                     <CloudRain size={14} />
                     <span>{t('advisory.actual')}</span>
                   </p>
-                  <p className="text-lg font-black text-blue-950 mt-0.5">
+                  <p className="text-lg sm:text-xl font-black text-blue-950 mt-0.5">
                     {advisoryData.weather?.rainfall_mm} mm
                   </p>
                 </div>
 
                 {/* Expected Rainfall */}
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-3 text-center">
-                  <p className="text-[11px] font-bold text-gray-600">
+                  <p className="text-[11px] font-black uppercase text-gray-700">
                     {t('advisory.expected')}
                   </p>
-                  <p className="text-lg font-black text-gray-900 mt-0.5">
+                  <p className="text-lg sm:text-xl font-black text-gray-950 mt-0.5">
                     {advisoryData.weather?.expected_rainfall_mm} mm
                   </p>
                 </div>
@@ -303,14 +301,14 @@ export default function CropAdvisory() {
                 const styles = getSeverityStyles(advisoryData.primary_advisory.severity);
                 const Icon = getCategoryIcon(advisoryData.primary_advisory.category);
                 return (
-                  <div className={`rounded-3xl border-2 p-5 shadow-md space-y-3 relative overflow-hidden ${styles.card}`}>
+                  <div className={`rounded-3xl border-2 p-5 sm:p-6 shadow-sm space-y-3.5 ${styles.card}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`p-3 rounded-2xl shrink-0 ${styles.iconBg}`}>
                           <Icon size={28} className="stroke-[2.5]" />
                         </div>
                         <div>
-                          <span className={`text-[11px] font-black uppercase px-2.5 py-0.5 rounded tracking-wide ${styles.badge}`}>
+                          <span className={`text-[10px] sm:text-[11px] uppercase px-2.5 py-0.5 rounded-full tracking-wide ${styles.badge}`}>
                             {styles.label}
                           </span>
                           <h3 className="text-lg sm:text-xl font-black text-gray-950 mt-1 leading-tight">
@@ -320,8 +318,8 @@ export default function CropAdvisory() {
                       </div>
                     </div>
 
-                    <div className="bg-white/80 rounded-2xl p-4 border border-black/5">
-                      <p className="text-sm sm:text-base font-bold leading-relaxed text-gray-900">
+                    <div className="bg-white/90 rounded-2xl p-4 border border-black/5">
+                      <p className="text-sm sm:text-base font-bold leading-relaxed text-gray-950">
                         {t(advisoryData.primary_advisory.recommendation_key, advisoryData.primary_advisory.params)}
                       </p>
                     </div>
@@ -330,7 +328,7 @@ export default function CropAdvisory() {
                     {advisoryData.primary_advisory.severity === 'high' && (
                       <a
                         href="tel:1551"
-                        className="w-full h-13 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform mt-1"
+                        className="w-full min-h-[52px] bg-red-700 hover:bg-red-800 active:bg-red-900 text-white rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-sm transition-colors mt-2"
                       >
                         <PhoneCall size={18} />
                         <span>{t('app.emergencyHelpline')}</span>
@@ -343,8 +341,8 @@ export default function CropAdvisory() {
 
             {/* 3. All Advisory Action Cards */}
             <div className="space-y-3">
-              <h3 className="text-base sm:text-lg font-black text-gray-900 flex items-center gap-2">
-                <Sparkles size={18} className="text-emerald-700" />
+              <h3 className="text-base sm:text-lg font-black text-gray-950 flex items-center gap-2">
+                <Sparkles size={20} className="text-emerald-700" />
                 <span>{t('advisory.allAdvisoriesTitle')}</span>
               </h3>
 
@@ -356,7 +354,7 @@ export default function CropAdvisory() {
                   return (
                     <div
                       key={item.id}
-                      className={`rounded-3xl border-2 p-5 shadow-sm space-y-3 transition-shadow hover:shadow-md ${styles.card}`}
+                      className={`rounded-3xl border-2 p-5 shadow-sm space-y-3 ${styles.card}`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
@@ -364,17 +362,17 @@ export default function CropAdvisory() {
                             <Icon size={24} className="stroke-[2.5]" />
                           </div>
                           <div>
-                            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wide ${styles.badge}`}>
+                            <span className={`text-[10px] sm:text-[11px] uppercase px-2.5 py-0.5 rounded-full tracking-wide ${styles.badge}`}>
                               {styles.label}
                             </span>
-                            <h4 className="text-base sm:text-lg font-black text-gray-900 mt-1 leading-snug">
+                            <h4 className="text-base sm:text-lg font-black text-gray-950 mt-1 leading-snug">
                               {t(item.issue_key, item.params)}
                             </h4>
                           </div>
                         </div>
                       </div>
 
-                      <p className="text-sm font-semibold leading-relaxed text-gray-800 bg-white/70 p-3.5 rounded-2xl border border-black/5">
+                      <p className="text-xs sm:text-sm font-bold leading-relaxed text-gray-950 bg-white/80 p-3.5 rounded-2xl border border-black/5">
                         {t(item.recommendation_key, item.params)}
                       </p>
                     </div>
@@ -385,14 +383,14 @@ export default function CropAdvisory() {
 
             {/* 4. Folded Favourable Resilient Crop Recommendation */}
             {advisoryData.favourable_crop_recommendation && (
-              <div className="bg-emerald-800 text-white rounded-3xl p-5 sm:p-6 shadow-md space-y-4 relative overflow-hidden">
+              <div className="bg-emerald-800 text-white rounded-3xl p-5 sm:p-6 shadow-md space-y-4 border-2 border-emerald-900">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-white text-emerald-800 rounded-2xl shrink-0">
                       <Sprout size={28} className="stroke-[2.5]" />
                     </div>
                     <div>
-                      <span className="text-[11px] font-black uppercase tracking-wider bg-emerald-950/70 text-emerald-200 px-2.5 py-0.5 rounded-full border border-emerald-500/40">
+                      <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-emerald-950/80 text-emerald-200 px-2.5 py-0.5 rounded-full border border-emerald-500/40">
                         {t('advisory.favourableCropTitle')}
                       </span>
                       <h3 className="text-xl sm:text-2xl font-black text-white mt-1">
@@ -411,7 +409,7 @@ export default function CropAdvisory() {
                   </span>
                 </div>
 
-                <p className="text-sm sm:text-base text-emerald-100 font-medium leading-relaxed bg-emerald-900/60 p-4 rounded-2xl border border-emerald-700/50">
+                <p className="text-xs sm:text-sm text-emerald-100 font-semibold leading-relaxed bg-emerald-900/70 p-4 rounded-2xl border border-emerald-700/60">
                   {t(
                     advisoryData.favourable_crop_recommendation.reason_key,
                     advisoryData.favourable_crop_recommendation.params

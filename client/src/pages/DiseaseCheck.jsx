@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScanLine, Camera, Upload, AlertCircle, CheckCircle2, RefreshCw, ShieldAlert } from 'lucide-react';
+import { ScanLine, Camera, CheckCircle2, RefreshCw, AlertCircle, ShieldAlert, Sparkles } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 
 export default function DiseaseCheck() {
@@ -18,9 +18,9 @@ export default function DiseaseCheck() {
         confidence: '94%',
         severity: 'Moderate',
         action: 'Spray Mancozeb 75% WP @ 2.5g per litre of water or Copper Oxychloride 50% WP @ 3g/L.',
-        prevention: 'Avoid excessive nitrogen fertilization and avoid water stagnation near crop roots.',
+        prevention: 'Avoid excessive nitrogen fertilization and prevent water stagnation near crop roots.',
       });
-    }, 1200);
+    }, 600);
   };
 
   return (
@@ -32,14 +32,14 @@ export default function DiseaseCheck() {
       />
 
       <div className="px-4 space-y-4">
-        {/* Banner note */}
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 flex items-start gap-3 text-amber-950">
-          <AlertCircle size={24} className="text-amber-700 shrink-0 mt-0.5" />
-          <div>
-            <span className="text-xs font-black uppercase tracking-wide bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+        {/* Banner Note */}
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-3xl p-4 sm:p-5 flex items-start gap-3.5 text-amber-950 shadow-sm">
+          <AlertCircle size={24} className="text-amber-800 shrink-0 mt-0.5" />
+          <div className="min-w-0">
+            <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-amber-200 text-amber-950 px-2.5 py-0.5 rounded-full">
               Beta / Prototype
             </span>
-            <p className="text-sm font-bold mt-1">
+            <p className="text-xs sm:text-sm font-bold text-amber-950 mt-1.5 leading-relaxed">
               {t('diseaseCheck.bannerNote')}
             </p>
           </div>
@@ -47,34 +47,34 @@ export default function DiseaseCheck() {
 
         {/* Upload / Camera Action Container */}
         <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-gray-300 text-center space-y-4 shadow-sm">
-          <div className="w-20 h-20 bg-emerald-50 text-emerald-700 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
-            <Camera size={38} className="stroke-[2.2]" />
+          <div className="w-20 h-20 bg-emerald-100 text-emerald-800 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+            <Camera size={38} className="stroke-[2.3]" />
           </div>
 
           <div>
-            <h3 className="text-xl font-black text-gray-900">
+            <h3 className="text-xl sm:text-2xl font-black text-gray-950">
               {t('diseaseCheck.uploadTitle')}
             </h3>
-            <p className="text-sm text-gray-600 font-medium max-w-sm mx-auto mt-1">
+            <p className="text-xs sm:text-sm text-gray-700 font-semibold max-w-sm mx-auto mt-1 leading-relaxed">
               {t('diseaseCheck.uploadDesc')}
             </p>
           </div>
 
-          <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+          <div className="pt-2 max-w-md mx-auto">
             <button
               type="button"
               onClick={simulateScan}
               disabled={scanning}
-              className="w-full sm:w-auto flex-1 h-14 bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 active:scale-95 transition-all shadow-md"
+              className="w-full min-h-[56px] bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 disabled:bg-emerald-400 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2.5 transition-colors shadow-md"
             >
               {scanning ? (
                 <>
-                  <RefreshCw size={20} className="animate-spin" />
-                  <span>Analyzing leaf...</span>
+                  <RefreshCw size={22} className="animate-spin" />
+                  <span>Analyzing leaf image...</span>
                 </>
               ) : (
                 <>
-                  <ScanLine size={20} />
+                  <Sparkles size={22} className="stroke-[2.5]" />
                   <span>{t('diseaseCheck.mockAnalyzeBtn')}</span>
                 </>
               )}
@@ -84,31 +84,31 @@ export default function DiseaseCheck() {
 
         {/* Scan Result Output */}
         {result && (
-          <div className="bg-white rounded-3xl p-5 border-2 border-emerald-500 shadow-md space-y-4">
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-500 shadow-md space-y-4">
             <div className="flex items-center gap-2.5 pb-3 border-b border-gray-100">
-              <CheckCircle2 size={24} className="text-emerald-600" />
-              <h4 className="text-lg font-black text-gray-900">
+              <CheckCircle2 size={24} className="text-emerald-700 shrink-0" />
+              <h4 className="text-lg sm:text-xl font-black text-gray-950 leading-tight">
                 {t('diseaseCheck.sampleResultTitle')}
               </h4>
-              <span className="ml-auto text-xs font-black px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">
+              <span className="ml-auto text-xs font-black px-2.5 py-1 bg-emerald-100 text-emerald-950 rounded-full shrink-0">
                 {result.confidence} Match
               </span>
             </div>
 
-            <div className="bg-emerald-50/70 rounded-2xl p-4 border border-emerald-200">
-              <p className="text-xs text-emerald-900 font-bold uppercase">Identified Disease</p>
-              <p className="text-lg font-black text-gray-950 mt-0.5">{result.disease}</p>
+            <div className="bg-emerald-50/90 rounded-2xl p-4 border border-emerald-300">
+              <p className="text-xs text-emerald-950 font-black uppercase tracking-wider">Identified Disease</p>
+              <p className="text-lg font-black text-emerald-950 mt-1">{result.disease}</p>
             </div>
 
-            <div className="space-y-2">
-              <div className="bg-amber-50 rounded-2xl p-4 border border-amber-200">
-                <p className="text-xs text-amber-900 font-bold uppercase">Recommended Action & Remedy</p>
-                <p className="text-sm sm:text-base font-bold text-gray-900 mt-1">{result.action}</p>
+            <div className="space-y-3">
+              <div className="bg-amber-50 rounded-2xl p-4 border border-amber-300">
+                <p className="text-xs text-amber-950 font-black uppercase tracking-wider">Recommended Remedy & Spray</p>
+                <p className="text-sm font-bold text-amber-950 mt-1 leading-relaxed">{result.action}</p>
               </div>
 
               <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-                <p className="text-xs text-gray-600 font-bold uppercase">Prevention Advice</p>
-                <p className="text-sm font-semibold text-gray-800 mt-1">{result.prevention}</p>
+                <p className="text-xs text-gray-700 font-black uppercase tracking-wider">Prevention Advice</p>
+                <p className="text-sm font-semibold text-gray-800 mt-1 leading-relaxed">{result.prevention}</p>
               </div>
             </div>
           </div>

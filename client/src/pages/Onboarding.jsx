@@ -469,7 +469,7 @@ export default function Onboarding() {
           <button
             type="submit"
             disabled={isSubmitting || isLoadingProfile}
-            className="w-full h-16 bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white rounded-2xl font-black text-lg shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full h-16 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 disabled:bg-emerald-400 text-white rounded-2xl font-black text-lg shadow-lg transition-colors flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>

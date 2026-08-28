@@ -23,8 +23,8 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg pb-safe">
-      <div className="max-w-4xl mx-auto flex items-center justify-around px-1 py-1.5 overflow-x-auto no-scrollbar">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-gray-200 shadow-lg">
+      <div className="max-w-4xl mx-auto grid grid-cols-6 items-center px-1 py-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -32,15 +32,15 @@ export default function BottomNav() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center py-1.5 px-2 rounded-xl min-w-[62px] text-center transition-all ${
+                `flex flex-col items-center justify-center min-h-[54px] py-1 px-0.5 rounded-xl text-center transition-colors ${
                   isActive
-                    ? 'bg-emerald-100 text-emerald-900 font-extrabold shadow-sm scale-105'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 font-medium'
+                    ? 'bg-emerald-100 text-emerald-950 font-black'
+                    : 'text-gray-600 hover:text-gray-950 hover:bg-gray-50 font-bold'
                 }`
               }
             >
-              <Icon size={22} className="stroke-[2.2] shrink-0" />
-              <span className="text-[11px] leading-tight mt-1 truncate max-w-[64px]">
+              <Icon size={20} className="stroke-[2.4] shrink-0" />
+              <span className="text-[10px] sm:text-[11px] leading-tight mt-0.5 truncate max-w-[54px] sm:max-w-none">
                 {item.label}
               </span>
             </NavLink>

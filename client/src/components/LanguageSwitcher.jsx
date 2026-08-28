@@ -15,14 +15,14 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="inline-flex items-center rounded-xl bg-emerald-950/50 p-1 border border-emerald-500/30">
+    <div className="inline-flex items-center rounded-2xl bg-emerald-950/60 p-1 border border-emerald-500/40 shadow-sm">
       <button
         type="button"
         onClick={() => toggleLanguage('hi')}
-        className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm font-black transition-colors ${
+        className={`min-h-[38px] px-3 rounded-xl text-xs sm:text-sm font-black transition-colors flex items-center justify-center ${
           currentLang === 'hi'
-            ? 'bg-amber-400 text-gray-950 shadow-sm'
-            : 'text-emerald-100 hover:text-white'
+            ? 'bg-amber-400 text-gray-950 shadow-sm font-black'
+            : 'text-emerald-100 hover:text-white font-bold'
         }`}
         aria-label="Switch to Hindi"
       >
@@ -31,10 +31,10 @@ export default function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => toggleLanguage('mr')}
-        className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm font-black transition-colors ${
+        className={`min-h-[38px] px-3 rounded-xl text-xs sm:text-sm font-black transition-colors flex items-center justify-center ${
           currentLang === 'mr'
-            ? 'bg-amber-400 text-gray-950 shadow-sm'
-            : 'text-emerald-100 hover:text-white'
+            ? 'bg-amber-400 text-gray-950 shadow-sm font-black'
+            : 'text-emerald-100 hover:text-white font-bold'
         }`}
         aria-label="Switch to Marathi"
       >
@@ -43,10 +43,10 @@ export default function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => toggleLanguage('en')}
-        className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm font-black transition-colors ${
+        className={`min-h-[38px] px-3 rounded-xl text-xs sm:text-sm font-black transition-colors flex items-center justify-center ${
           currentLang === 'en'
-            ? 'bg-amber-400 text-gray-950 shadow-sm'
-            : 'text-emerald-100 hover:text-white'
+            ? 'bg-amber-400 text-gray-950 shadow-sm font-black'
+            : 'text-emerald-100 hover:text-white font-bold'
         }`}
         aria-label="Switch to English"
       >

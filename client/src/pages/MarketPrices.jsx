@@ -100,22 +100,22 @@ export default function MarketPrices() {
       <div className="px-4 space-y-4">
         
         {/* Commodity & District Filter Controls */}
-        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-gray-200 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 text-xs font-black uppercase text-gray-700 tracking-wider">
-            <Filter size={16} className="text-emerald-700" />
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-gray-200 shadow-sm space-y-3.5">
+          <div className="flex items-center gap-2 text-xs font-black uppercase text-gray-900 tracking-wider">
+            <Filter size={16} className="text-emerald-700 stroke-[2.5]" />
             <span>{t('market.selectCropLabel')} & {t('market.selectDistrictLabel')}</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Crop Selector */}
             <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">
                 {t('common.crop')}
               </label>
               <select
                 value={selectedCrop}
                 onChange={(e) => handleCropChange(e.target.value)}
-                className="w-full h-12 px-3 bg-gray-50 border-2 border-gray-300 rounded-2xl text-sm font-bold text-gray-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                className="w-full h-13 px-3.5 bg-gray-50 border-2 border-gray-300 rounded-2xl text-sm font-bold text-gray-950 focus:border-emerald-600 focus:bg-white focus:outline-none transition-colors"
               >
                 {MAJOR_CROPS.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -127,13 +127,13 @@ export default function MarketPrices() {
 
             {/* District Selector */}
             <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">
                 {t('common.district')}
               </label>
               <select
                 value={selectedDistrict}
                 onChange={(e) => handleDistrictChange(e.target.value)}
-                className="w-full h-12 px-3 bg-gray-50 border-2 border-gray-300 rounded-2xl text-sm font-bold text-gray-900 focus:border-emerald-600 focus:bg-white focus:outline-none"
+                className="w-full h-13 px-3.5 bg-gray-50 border-2 border-gray-300 rounded-2xl text-sm font-bold text-gray-950 focus:border-emerald-600 focus:bg-white focus:outline-none transition-colors"
               >
                 {allDistricts.map((d) => (
                   <option key={d} value={d}>
@@ -147,9 +147,9 @@ export default function MarketPrices() {
 
         {/* Loading Spinner */}
         {loading && (
-          <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-sm text-center space-y-2">
-            <RefreshCw size={28} className="animate-spin text-emerald-700 mx-auto" />
-            <p className="text-sm font-black text-gray-700">{t('common.loading')}</p>
+          <div className="bg-white rounded-3xl p-8 border-2 border-gray-200 shadow-sm text-center space-y-3">
+            <RefreshCw size={32} className="animate-spin text-emerald-700 mx-auto" />
+            <p className="text-base font-black text-gray-800">{t('common.loading')}</p>
           </div>
         )}
 

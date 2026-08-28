@@ -9,48 +9,47 @@ export default function ActionCard({
   subtitle,
   icon: Icon,
   badge,
-  badgeColor = 'bg-emerald-100 text-emerald-800',
+  badgeColor = 'bg-emerald-100 text-emerald-950',
   cardColor = 'bg-white',
-  iconBgColor = 'bg-emerald-50 text-emerald-700',
-  variant = 'default',
+  iconBgColor = 'bg-emerald-100 text-emerald-900',
 }) {
   const content = (
     <div
-      className={`relative w-full rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-sm hover:shadow-md active:scale-[0.99] transition-all flex items-center justify-between gap-4 ${cardColor}`}
+      className={`relative w-full min-h-[72px] rounded-3xl p-4 sm:p-5 border-2 border-gray-200 shadow-sm hover:border-emerald-300 hover:shadow-md active:bg-gray-50 transition-colors flex items-center justify-between gap-3.5 ${cardColor}`}
     >
       <div className="flex items-center gap-3.5 min-w-0">
         {Icon && (
           <div className={`p-3 rounded-2xl shrink-0 ${iconBgColor}`}>
-            <Icon size={28} className="stroke-[2.3]" />
+            <Icon size={26} className="stroke-[2.5]" />
           </div>
         )}
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-base sm:text-lg font-black text-gray-900 leading-tight">
+            <h3 className="text-base sm:text-lg font-black text-gray-950 leading-tight">
               {title}
             </h3>
             {badge && (
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${badgeColor}`}>
+              <span className={`text-[10px] sm:text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wide ${badgeColor}`}>
                 {badge}
               </span>
             )}
           </div>
           {subtitle && (
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 font-medium line-clamp-2">
+            <p className="text-xs sm:text-sm text-gray-700 mt-1 font-semibold line-clamp-2 leading-snug">
               {subtitle}
             </p>
           )}
         </div>
       </div>
-      <div className="text-gray-400 shrink-0">
-        <ChevronRight size={24} className="stroke-[2.5]" />
+      <div className="text-gray-500 shrink-0">
+        <ChevronRight size={22} className="stroke-[2.5]" />
       </div>
     </div>
   );
 
   if (to) {
     return (
-      <Link to={to} className="block w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-2xl">
+      <Link to={to} className="block w-full focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-3xl">
         {content}
       </Link>
     );
@@ -60,7 +59,7 @@ export default function ActionCard({
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-2xl"
+      className="w-full text-left focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-3xl"
     >
       {content}
     </button>

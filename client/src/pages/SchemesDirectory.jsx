@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   FileText, 
@@ -87,7 +87,7 @@ export default function SchemesDirectory() {
             <button
               type="button"
               onClick={() => setSearchTerm('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 rounded-xl transition-colors"
               title={t('schemes.clearSearch')}
             >
               <X size={18} />
@@ -102,7 +102,7 @@ export default function SchemesDirectory() {
               <Building2 size={15} className="text-emerald-700" />
               <span>{t('schemes.totalSchemes')}</span>
             </span>
-            <span className="bg-emerald-100 text-emerald-900 px-2.5 py-0.5 rounded-full font-black">
+            <span className="bg-emerald-100 text-emerald-950 px-2.5 py-0.5 rounded-full font-black">
               {schemes.length}
             </span>
           </div>
@@ -119,25 +119,25 @@ export default function SchemesDirectory() {
         {/* Error Alert */}
         {error && (
           <div className="bg-red-50 border-2 border-red-400 rounded-3xl p-5 flex items-center gap-3 text-red-950 shadow-sm">
-            <AlertCircle size={24} className="text-red-600 shrink-0" />
-            <p className="text-sm font-bold text-red-900">{error}</p>
+            <AlertCircle size={24} className="text-red-700 shrink-0" />
+            <p className="text-sm font-bold text-red-950">{error}</p>
           </div>
         )}
 
         {/* Empty State: No Schemes Found */}
         {!loading && !error && schemes.length === 0 && (
           <div className="bg-white rounded-3xl p-8 border-2 border-dashed border-gray-300 text-center space-y-3 shadow-sm">
-            <div className="p-3 bg-amber-100 text-amber-800 rounded-2xl w-fit mx-auto">
+            <div className="p-3 bg-amber-100 text-amber-900 rounded-2xl w-fit mx-auto">
               <AlertCircle size={32} />
             </div>
-            <h4 className="text-lg font-black text-gray-900">
+            <h4 className="text-lg font-black text-gray-950">
               {t('schemes.noSchemesFound')}
             </h4>
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => setSearchTerm('')}
-                className="mt-2 bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-xs font-black shadow-sm active:scale-95 transition-transform"
+                className="mt-2 min-h-[44px] bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white px-5 py-2 rounded-xl text-xs font-black shadow-sm transition-colors"
               >
                 {t('schemes.clearSearch')}
               </button>
@@ -154,12 +154,12 @@ export default function SchemesDirectory() {
               return (
                 <div
                   key={scheme.id}
-                  className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-gray-200 shadow-sm space-y-4 hover:shadow-md hover:border-emerald-200 transition-all"
+                  className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-gray-200 shadow-sm space-y-4 hover:border-emerald-300 transition-colors"
                 >
                   {/* Card Title & Badge */}
                   <div className="flex items-start gap-3.5">
-                    <div className="p-3 bg-emerald-100 text-emerald-800 rounded-2xl shrink-0">
-                      <Sparkles size={24} className="stroke-[2.3]" />
+                    <div className="p-3 bg-emerald-100 text-emerald-900 rounded-2xl shrink-0">
+                      <Sparkles size={24} className="stroke-[2.5]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg sm:text-xl font-black text-gray-950 leading-tight">
@@ -173,9 +173,9 @@ export default function SchemesDirectory() {
 
                   {/* Eligibility Section */}
                   {scheme.eligibility && (
-                    <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3.5 space-y-1">
-                      <p className="text-[11px] font-black uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
-                        <CheckCircle2 size={14} className="text-emerald-700" />
+                    <div className="bg-emerald-50/90 border border-emerald-300 rounded-2xl p-3.5 space-y-1">
+                      <p className="text-[11px] font-black uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+                        <CheckCircle2 size={14} className="text-emerald-800" />
                         <span>{t('schemes.eligibilityLabel')}</span>
                       </p>
                       <p className="text-xs sm:text-sm font-bold text-emerald-950 leading-normal">
@@ -189,19 +189,19 @@ export default function SchemesDirectory() {
                     {/* Contact Info / Phone Call Link */}
                     {scheme.contact_info ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-500">
+                        <span className="text-xs font-bold text-gray-600">
                           {t('schemes.contactLabel')}:
                         </span>
                         {primaryPhone ? (
                           <a
                             href={`tel:${primaryPhone}`}
-                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl border border-red-200 shadow-sm active:scale-95 transition-transform"
+                            className="min-h-[44px] inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-red-950 bg-red-50 hover:bg-red-100 active:bg-red-200 px-3.5 py-2 rounded-xl border border-red-200 shadow-sm transition-colors"
                           >
                             <PhoneCall size={14} className="stroke-[2.5]" />
                             <span>{scheme.contact_info}</span>
                           </a>
                         ) : (
-                          <span className="text-xs font-bold text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg">
+                          <span className="text-xs font-bold text-gray-900 bg-gray-100 px-2.5 py-1.5 rounded-lg">
                             {scheme.contact_info}
                           </span>
                         )}
@@ -216,7 +216,7 @@ export default function SchemesDirectory() {
                         href={scheme.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-black text-emerald-800 bg-emerald-100 hover:bg-emerald-200 px-4 py-2 rounded-xl transition-colors shrink-0 shadow-sm active:scale-95"
+                        className="min-h-[44px] inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-black text-emerald-950 bg-emerald-100 hover:bg-emerald-200 active:bg-emerald-300 px-4 py-2 rounded-xl transition-colors shrink-0 shadow-sm"
                       >
                         <span>{t('schemes.officialPortalBtn')}</span>
                         <ExternalLink size={14} className="stroke-[2.5]" />
